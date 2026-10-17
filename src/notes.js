@@ -28,13 +28,17 @@ export const removeNote = async (id) => {
     const notes = await getAllNotes();
     const match = notes.find((note) => note.id === id);
 
-    if (match) {
-        const newNotes = notes.filter((note) => note.id !== id);
-        await saveDB({ notes: newNotes });
-        return id;
+    if (!match) {
+        return false;
     }
+
+    const newNotes = notes.filter((note) => note.id !== id);
+    await saveDB({ notes: newNotes });
+    return true;
 };
 
 export const removeAllNotes = async () => {
+    const { notes } = await getDB();
     await saveDB({ notes: [] });
+    return notes.length;
 };

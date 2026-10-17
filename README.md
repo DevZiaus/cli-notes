@@ -41,6 +41,8 @@ Alternatively, run commands directly with `node index.js <command>` without link
 note <command> [options]
 ```
 
+Run `note --help` for a full command reference, or `note <command> --help` for details about a specific command.
+
 ### Commands
 
 | Command               | Description                                  |

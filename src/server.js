@@ -76,8 +76,30 @@ const createServer = (notes) => {
 
 export const start = (notes, port) => {
     const server = createServer(notes);
-    server.listen(port, () => {
-        console.log(`Server is listening on port ${port}`);
+
+    server.on('error', (error) => {
+        if (error.code === 'EADDRINUSE') {
+            console.error(`Port ${port} is already in use.`);
+            const alternative = port >= 65535 ? 5000 : port + 1;
+            console.error(`Try a different one, e.g.  note web ${alternative}`);
+        } else if (error.code === 'EACCES') {
+            console.error(`No permission to use port ${port}.`);
+            console.error('Try a port above 1024, e.g.  note web 5000');
+        } else {
+            console.error(`Could not start the web viewer: ${error.message}`);
+        }
+
+        process.exit(1);
     });
-    open(`http://localhost:${port}`);
+
+    server.listen(port, () => {
+        const url = `http://localhost:${port}`;
+        console.log(`Serving your notes at ${url}`);
+        console.log('Press Ctrl+C to stop the server.');
+
+        open(url).catch(() => {
+            console.warn('Could not open your browser automatically.');
+            console.log(`Open ${url} manually to view your notes.`);
+        });
+    });
 };
