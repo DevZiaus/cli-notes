@@ -1,6 +1,6 @@
 # cli-notes
 
-A simple command-line note-taking app. Create, search, and delete notes from your terminal — or browse them in a local web viewer.
+A simple command-line note-taking app. Create, search, and delete notes from your terminal — or manage them in a local web UI.
 
 Notes are stored locally in a plain JSON file (`db.json`), so there's no database to set up and no data leaves your machine.
 
@@ -10,8 +10,8 @@ Notes are stored locally in a plain JSON file (`db.json`), so there's no databas
 - 🏷️ Tag notes for easy organization
 - 🔍 Search notes by content or tag
 - 🗑️ Remove single notes or wipe everything at once
-- 🌐 View all notes in your browser with a built-in web server
-- 🎨 Responsive viewer with automatic light/dark themes
+- 🌐 Full web UI — add, edit, and delete notes right in your browser
+- 🎨 Responsive UI with automatic light/dark themes
 
 ## Requirements
 
@@ -51,7 +51,7 @@ Run `note --help` for a full command reference, or `note <command> --help` for d
 | `note all`            | List all notes                               |
 | `note find <filter>`  | Find notes whose content or tags match the filter |
 | `note remove <id>`    | Remove a note by its id                      |
-| `note web [port]`     | Launch a web viewer for your notes           |
+| `note web [port]`     | Launch the web UI to manage notes            |
 | `note clean`          | Remove all notes                             |
 
 ### Options
@@ -87,7 +87,7 @@ Remove a note by its id:
 note remove 1792085549095
 ```
 
-Open the web viewer (defaults to port 5000):
+Open the web UI (defaults to port 5000):
 
 ```bash
 note web 3000
@@ -98,6 +98,16 @@ Delete all notes:
 ```bash
 note clean
 ```
+
+### Web UI
+
+`note web` starts a local server and opens an interactive page where you can:
+
+- **Add** notes with the form at the top (separate tags with commas)
+- **Edit** a note with its **Edit** button
+- **Delete** a note with its **Delete** button
+
+Changes are saved to `db.json` immediately.
 
 ## How notes are stored
 
@@ -125,11 +135,11 @@ cli-notes/
 ├── db.json             # JSON note storage
 └── src/
     ├── command.js      # yargs command definitions
-    ├── notes.js        # note operations (create, find, remove)
+    ├── notes.js        # note operations (create, update, find, remove)
     ├── db.js           # read/write helpers for db.json
-    ├── server.js       # web viewer server
+    ├── server.js       # web server with the notes API
     ├── utils.js        # console output formatting
-    └── template.html   # HTML template for the web viewer
+    └── template.html   # web UI (markup, styles, client-side code)
 ```
 
 ## License

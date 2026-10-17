@@ -24,6 +24,26 @@ export const findNotes = async (filter) => {
     );
 };
 
+export const updateNote = async (id, updates) => {
+    const notes = await getAllNotes();
+    const match = notes.find((note) => note.id === id);
+
+    if (!match) {
+        return false;
+    }
+
+    const updated = {
+        ...match,
+        content: updates.content,
+        tags: updates.tags,
+    };
+
+    await saveDB({
+        notes: notes.map((note) => (note.id === id ? updated : note)),
+    });
+    return updated;
+};
+
 export const removeNote = async (id) => {
     const notes = await getAllNotes();
     const match = notes.find((note) => note.id === id);

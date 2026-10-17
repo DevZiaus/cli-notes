@@ -19,8 +19,15 @@
                 --border-hover: #c7d2fe;
                 --tag-bg: #eef2ff;
                 --tag-text: #4338ca;
-                --code-bg: #eef2ff;
-                --code-text: #4338ca;
+                --accent: #4f46e5;
+                --accent-text: #ffffff;
+                --focus-ring: rgba(79, 70, 229, 0.22);
+                --danger: #dc2626;
+                --danger-bg: rgba(220, 38, 38, 0.08);
+                --success: #15803d;
+                --success-bg: rgba(21, 128, 61, 0.08);
+                --hover-bg: rgba(17, 24, 39, 0.05);
+                --input-bg: #f9fafb;
                 --shadow:
                     0 1px 2px rgba(16, 24, 40, 0.05),
                     0 2px 6px rgba(16, 24, 40, 0.06);
@@ -38,8 +45,15 @@
                     --border-hover: #4b5382;
                     --tag-bg: #242b45;
                     --tag-text: #a5b4fc;
-                    --code-bg: #242b45;
-                    --code-text: #c7d2fe;
+                    --accent: #818cf8;
+                    --accent-text: #10131c;
+                    --focus-ring: rgba(129, 140, 248, 0.28);
+                    --danger: #f87171;
+                    --danger-bg: rgba(248, 113, 113, 0.12);
+                    --success: #4ade80;
+                    --success-bg: rgba(74, 222, 128, 0.1);
+                    --hover-bg: rgba(255, 255, 255, 0.06);
+                    --input-bg: #12151f;
                     --shadow:
                         0 1px 2px rgba(0, 0, 0, 0.4),
                         0 2px 8px rgba(0, 0, 0, 0.3);
@@ -84,7 +98,7 @@
                 display: flex;
                 align-items: center;
                 gap: 12px;
-                margin-bottom: 28px;
+                margin-bottom: 20px;
             }
 
             .page-header h1 {
@@ -104,6 +118,142 @@
                 border-radius: 999px;
             }
 
+            .count:empty {
+                display: none;
+            }
+
+            .status {
+                margin-bottom: 16px;
+                padding: 10px 14px;
+                font-size: 0.85rem;
+                border-radius: 10px;
+            }
+
+            .status:empty {
+                display: none;
+            }
+
+            .status.error {
+                color: var(--danger);
+                background: var(--danger-bg);
+            }
+
+            .status.success {
+                color: var(--success);
+                background: var(--success-bg);
+            }
+
+            .note-form {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 16px;
+                margin-bottom: 20px;
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                box-shadow: var(--shadow);
+            }
+
+            .input {
+                width: 100%;
+                padding: 10px 12px;
+                font: inherit;
+                font-size: 0.92rem;
+                color: var(--text);
+                background: var(--input-bg);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                transition:
+                    border-color 0.15s ease,
+                    box-shadow 0.15s ease;
+            }
+
+            .input::placeholder {
+                color: var(--muted);
+                opacity: 0.8;
+            }
+
+            .input:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 3px var(--focus-ring);
+            }
+
+            textarea.input {
+                resize: vertical;
+                min-height: 2.8em;
+            }
+
+            .form-row {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .form-row .input {
+                flex: 1;
+            }
+
+            .btn {
+                padding: 8px 14px;
+                font: inherit;
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: var(--muted);
+                white-space: nowrap;
+                background: transparent;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                cursor: pointer;
+                transition:
+                    color 0.15s ease,
+                    background 0.15s ease,
+                    border-color 0.15s ease,
+                    opacity 0.15s ease;
+            }
+
+            .btn:hover {
+                color: var(--text);
+                background: var(--hover-bg);
+                border-color: var(--border-hover);
+            }
+
+            .btn:focus-visible {
+                outline: 2px solid var(--accent);
+                outline-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.55;
+                cursor: default;
+            }
+
+            .btn-primary {
+                color: var(--accent-text);
+                background: var(--accent);
+                border-color: transparent;
+            }
+
+            .btn-primary:hover {
+                color: var(--accent-text);
+                background: var(--accent);
+                border-color: transparent;
+                opacity: 0.9;
+            }
+
+            .btn-danger {
+                padding-inline: 10px;
+                color: var(--danger);
+                border-color: transparent;
+            }
+
+            .btn-danger:hover {
+                color: var(--danger);
+                background: var(--danger-bg);
+                border-color: transparent;
+            }
+
             .notes {
                 display: grid;
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -119,7 +269,6 @@
                 border: 1px solid var(--border);
                 border-radius: 14px;
                 box-shadow: var(--shadow);
-                animation: rise 0.25s ease;
                 transition:
                     transform 0.16s ease,
                     box-shadow 0.16s ease,
@@ -168,6 +317,21 @@
                 white-space: nowrap;
             }
 
+            .note-actions {
+                display: flex;
+                gap: 8px;
+            }
+
+            .note-actions .btn {
+                padding: 6px 12px;
+            }
+
+            .edit-form {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
             .empty {
                 grid-column: 1 / -1;
                 padding: 72px 24px;
@@ -188,30 +352,8 @@
                 color: var(--muted);
             }
 
-            code {
-                padding: 2px 6px;
-                font-family:
-                    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-                font-size: 0.85em;
-                color: var(--code-text);
-                background: var(--code-bg);
-                border-radius: 6px;
-            }
-
-            @keyframes rise {
-                from {
-                    opacity: 0;
-                    transform: translateY(6px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
             @media (prefers-reduced-motion: reduce) {
                 .note {
-                    animation: none;
                     transition: none;
                 }
             }
@@ -221,9 +363,295 @@
         <div class="page">
             <header class="page-header">
                 <h1>Notes</h1>
-                <span class="count">{{count}}</span>
+                <span class="count" id="count"></span>
             </header>
-            <main class="notes">{{notes}}</main>
+
+            <div class="status" id="status" role="status"></div>
+
+            <form class="note-form" id="note-form" autocomplete="off">
+                <textarea
+                    class="input"
+                    name="content"
+                    rows="2"
+                    placeholder="Write a note…"
+                    required
+                ></textarea>
+                <div class="form-row">
+                    <input
+                        class="input"
+                        name="tags"
+                        placeholder="tags, comma, separated"
+                    />
+                    <button class="btn btn-primary" type="submit">
+                        Add note
+                    </button>
+                </div>
+            </form>
+
+            <main class="notes" id="notes"></main>
         </div>
+
+        <script>
+            const els = {
+                count: document.querySelector('#count'),
+                status: document.querySelector('#status'),
+                form: document.querySelector('#note-form'),
+                notes: document.querySelector('#notes'),
+            };
+
+            let notes = [];
+            let editingId = null;
+            let statusTimer = null;
+
+            const request = async (url, options) => {
+                const response = await fetch(url, options);
+
+                if (!response.ok) {
+                    let message = `the request failed (${response.status})`;
+
+                    try {
+                        message = (await response.json()).error ?? message;
+                    } catch {
+                        // keep the generic message
+                    }
+
+                    throw new Error(message);
+                }
+
+                return response.status === 204 ? null : response.json();
+            };
+
+            const api = {
+                list: () => request('/api/notes'),
+                create: (note) =>
+                    request('/api/notes', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(note),
+                    }),
+                update: (id, note) =>
+                    request(`/api/notes/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(note),
+                    }),
+                remove: (id) =>
+                    request(`/api/notes/${id}`, { method: 'DELETE' }),
+            };
+
+            const el = (tag, className, text) => {
+                const node = document.createElement(tag);
+
+                if (className) {
+                    node.className = className;
+                }
+                if (text !== undefined) {
+                    node.textContent = text;
+                }
+
+                return node;
+            };
+
+            const formatDate = (timestamp) =>
+                new Date(timestamp).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                });
+
+            const splitTags = (value) =>
+                value
+                    .split(',')
+                    .map((tag) => tag.trim())
+                    .filter(Boolean);
+
+            const showStatus = (message, type = 'error') => {
+                els.status.textContent = message;
+                els.status.className = `status ${type}`;
+
+                clearTimeout(statusTimer);
+                statusTimer = setTimeout(() => {
+                    els.status.textContent = '';
+                    els.status.className = 'status';
+                }, 4000);
+            };
+
+            const noteCard = (note) => {
+                const card = el('article', 'note');
+
+                if (editingId === note.id) {
+                    const form = el('form', 'edit-form');
+                    const content = el('textarea', 'input');
+                    content.name = 'content';
+                    content.required = true;
+                    content.rows = 3;
+                    content.value = note.content;
+                    const tags = el('input', 'input');
+                    tags.name = 'tags';
+                    tags.placeholder = 'tags, comma, separated';
+                    tags.value = note.tags.join(', ');
+                    const actions = el('div', 'note-actions');
+                    const save = el('button', 'btn btn-primary', 'Save');
+                    save.type = 'submit';
+                    const cancel = el('button', 'btn', 'Cancel');
+                    cancel.type = 'button';
+
+                    cancel.addEventListener('click', () => {
+                        editingId = null;
+                        render();
+                    });
+
+                    form.addEventListener('keydown', (event) => {
+                        if (event.key === 'Escape') {
+                            editingId = null;
+                            render();
+                        }
+                    });
+
+                    form.addEventListener('submit', async (event) => {
+                        event.preventDefault();
+                        save.disabled = true;
+
+                        try {
+                            const updated = await api.update(note.id, {
+                                content: content.value.trim(),
+                                tags: splitTags(tags.value),
+                            });
+
+                            notes = notes.map((item) =>
+                                item.id === note.id ? updated : item,
+                            );
+                            editingId = null;
+                            render();
+                            showStatus('Note saved.', 'success');
+                        } catch (error) {
+                            save.disabled = false;
+                            showStatus(error.message);
+                        }
+                    });
+
+                    actions.append(save, cancel);
+                    form.append(content, tags, actions);
+                    card.append(form);
+
+                    requestAnimationFrame(() => content.focus());
+                    return card;
+                }
+
+                card.append(el('p', 'note-content', note.content));
+
+                const meta = el('div', 'note-meta');
+                const tagWrap = el('div', 'tags');
+                note.tags.forEach((tag) =>
+                    tagWrap.append(el('span', 'tag', tag)),
+                );
+                meta.append(
+                    tagWrap,
+                    el('time', 'note-date', formatDate(note.id)),
+                );
+                card.append(meta);
+
+                const actions = el('div', 'note-actions');
+                const edit = el('button', 'btn', 'Edit');
+                edit.type = 'button';
+                const remove = el('button', 'btn btn-danger', 'Delete');
+                remove.type = 'button';
+
+                edit.addEventListener('click', () => {
+                    editingId = note.id;
+                    render();
+                });
+
+                remove.addEventListener('click', async () => {
+                    if (!window.confirm('Delete this note?')) {
+                        return;
+                    }
+
+                    remove.disabled = true;
+
+                    try {
+                        await api.remove(note.id);
+                        notes = notes.filter((item) => item.id !== note.id);
+                        render();
+                        showStatus('Note deleted.', 'success');
+                    } catch (error) {
+                        remove.disabled = false;
+                        showStatus(error.message);
+                    }
+                });
+
+                actions.append(edit, remove);
+                card.append(actions);
+
+                return card;
+            };
+
+            const render = () => {
+                els.count.textContent = `${notes.length} ${
+                    notes.length === 1 ? 'note' : 'notes'
+                }`;
+
+                if (notes.length === 0) {
+                    const empty = el('div', 'empty');
+                    empty.append(
+                        el('p', 'empty-title', 'No notes yet'),
+                        el(
+                            'p',
+                            'empty-hint',
+                            'Write your first note in the box above.',
+                        ),
+                    );
+                    els.notes.replaceChildren(empty);
+                    return;
+                }
+
+                els.notes.replaceChildren(...notes.map(noteCard));
+            };
+
+            els.form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const contentInput = els.form.elements.content;
+                const content = contentInput.value.trim();
+
+                if (!content) {
+                    showStatus('A note needs some content.');
+                    contentInput.focus();
+                    return;
+                }
+
+                const submit = els.form.querySelector('button[type="submit"]');
+                submit.disabled = true;
+
+                try {
+                    const note = await api.create({
+                        content,
+                        tags: splitTags(els.form.elements.tags.value),
+                    });
+
+                    notes.unshift(note);
+                    els.form.reset();
+                    render();
+                    showStatus('Note added.', 'success');
+                    contentInput.focus();
+                } catch (error) {
+                    showStatus(error.message);
+                } finally {
+                    submit.disabled = false;
+                }
+            });
+
+            const load = async () => {
+                try {
+                    notes = await api.list();
+                    notes.sort((a, b) => b.id - a.id);
+                    render();
+                } catch (error) {
+                    showStatus(error.message);
+                }
+            };
+
+            load();
+        </script>
     </body>
 </html>

@@ -2,80 +2,175 @@ import fs from 'node:fs/promises';
 import http from 'node:http';
 import open from 'open';
 
-const interpolate = (html, data) => {
-    return html.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, placeholder) => {
-        return data[placeholder] || '';
-    });
+import { getAllNotes, newNote, removeNote, updateNote } from './notes.js';
+
+const HTML_PATH = new URL('./template.html', import.meta.url).pathname;
+
+const sendJson = (res, status, data) => {
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
 };
 
-const escapeHtml = (text) =>
-    String(text)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-
-const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    if (Number.isNaN(date.getTime())) return '';
-
-    return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-    });
+const httpError = (status, message) => {
+    const error = new Error(message);
+    error.status = status;
+    return error;
 };
 
-const formatNotes = (notes) => {
-    if (notes.length === 0) {
-        return `
-      <div class="empty">
-        <p class="empty-title">No notes yet</p>
-        <p class="empty-hint">Create your first one with <code>note new "My first note"</code></p>
-      </div>
-    `;
-    }
+const readJsonBody = (req) => {
+    return new Promise((resolve, reject) => {
+        let body = '';
+        let tooLarge = false;
 
-    return notes
-        .map((note) => {
-            const tags = (note.tags || [])
-                .map((tag) => tag.trim())
-                .filter(Boolean)
-                .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
-                .join('');
+        req.on('data', (chunk) => {
+            if (tooLarge) {
+                return;
+            }
 
-            const date = formatDate(note.id);
+            body += chunk;
 
-            return `
-      <article class="note">
-        <p class="note-content">${escapeHtml(note.content)}</p>
-        <div class="note-meta">
-          <div class="tags">${tags}</div>
-          ${date ? `<time class="note-date">${date}</time>` : ''}
-        </div>
-      </article>
-    `;
-        })
-        .join('\n');
-};
-
-const createServer = (notes) => {
-    return http.createServer(async (req, res) => {
-        const HTML_PATH = new URL('./template.html', import.meta.url).pathname;
-        const template = await fs.readFile(HTML_PATH, 'utf-8');
-        const html = interpolate(template, {
-            notes: formatNotes(notes),
-            count: `${notes.length} ${notes.length === 1 ? 'note' : 'notes'}`,
+            if (body.length > 100_000) {
+                tooLarge = true;
+                body = '';
+            }
         });
 
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(html);
+        req.on('end', () => {
+            if (tooLarge) {
+                reject(httpError(413, 'the request body is too large'));
+                return;
+            }
+
+            if (!body) {
+                resolve({});
+                return;
+            }
+
+            try {
+                resolve(JSON.parse(body));
+            } catch {
+                reject(
+                    httpError(400, 'the request body is not valid JSON'),
+                );
+            }
+        });
+
+        req.on('error', reject);
     });
 };
 
-export const start = (notes, port) => {
-    const server = createServer(notes);
+const parseNotePayload = (body) => {
+    const data = body && typeof body === 'object' ? body : {};
+    const content =
+        typeof data.content === 'string' ? data.content.trim() : '';
+
+    if (!content) {
+        return { error: 'note content is required' };
+    }
+
+    const tags = Array.isArray(data.tags)
+        ? data.tags
+              .filter((tag) => typeof tag === 'string')
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+        : [];
+
+    return { note: { content, tags } };
+};
+
+const handleNotesApi = async (req, res, id) => {
+    if (id === null && req.method === 'GET') {
+        return sendJson(res, 200, await getAllNotes());
+    }
+
+    if (id === null && req.method === 'POST') {
+        const payload = parseNotePayload(await readJsonBody(req));
+
+        if (payload.error) {
+            return sendJson(res, 400, payload);
+        }
+
+        const note = await newNote(payload.note.content, payload.note.tags);
+        return sendJson(res, 201, note);
+    }
+
+    if (id !== null && req.method === 'PUT') {
+        const payload = parseNotePayload(await readJsonBody(req));
+
+        if (payload.error) {
+            return sendJson(res, 400, payload);
+        }
+
+        const note = await updateNote(id, payload.note);
+
+        if (!note) {
+            return sendJson(res, 404, { error: `no note with id ${id}` });
+        }
+
+        return sendJson(res, 200, note);
+    }
+
+    if (id !== null && req.method === 'DELETE') {
+        const removed = await removeNote(id);
+
+        if (!removed) {
+            return sendJson(res, 404, { error: `no note with id ${id}` });
+        }
+
+        res.writeHead(204);
+        return res.end();
+    }
+
+    return sendJson(res, 405, {
+        error: `${req.method} is not allowed on this endpoint`,
+    });
+};
+
+const handleRequest = async (req, res) => {
+    const { pathname } = new URL(
+        req.url,
+        `http://${req.headers.host ?? 'localhost'}`,
+    );
+
+    if (req.method === 'GET' && pathname === '/') {
+        const template = await fs.readFile(HTML_PATH, 'utf-8');
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(template);
+        return;
+    }
+
+    const notesApiMatch = pathname.match(/^\/api\/notes(?:\/(\d+))?$/);
+
+    if (notesApiMatch) {
+        const id = notesApiMatch[1] ? Number(notesApiMatch[1]) : null;
+        await handleNotesApi(req, res, id);
+        return;
+    }
+
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not found');
+};
+
+const createServer = () => {
+    return http.createServer(async (req, res) => {
+        try {
+            await handleRequest(req, res);
+        } catch (error) {
+            console.error(`Request failed: ${error.message}`);
+
+            if (!res.headersSent) {
+                sendJson(res, error.status ?? 500, {
+                    error: error.message,
+                });
+            } else {
+                res.end();
+            }
+        }
+    });
+};
+
+export const start = (port) => {
+    const server = createServer();
 
     server.on('error', (error) => {
         if (error.code === 'EADDRINUSE') {

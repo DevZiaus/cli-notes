@@ -129,7 +129,7 @@ const cli = yargs(hideBin(process.argv))
     )
     .command(
         'web [port]',
-        'launch website to see notes',
+        'launch the web UI to add, edit, and delete notes',
         (yargs) => {
             return yargs.positional('port', {
                 describe: 'the port to bind the web viewer to',
@@ -148,16 +148,7 @@ const cli = yargs(hideBin(process.argv))
                 );
             }
 
-            const notes = await getAllNotes();
-
-            if (notes.length === 0) {
-                console.warn(
-                    'You have no notes yet, so the page will be empty.',
-                );
-                console.log('Create one with:  note new "My first note"');
-            }
-
-            start(notes, port);
+            start(port);
         },
     )
     .command(
