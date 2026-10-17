@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Local notes database (personal data, created automatically on first run)
+db.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp

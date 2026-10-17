@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Notes</title>
+        <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>"
+        />
+        <style>
+            :root {
+                --bg: #f5f6f8;
+                --glow: rgba(99, 102, 241, 0.1);
+                --card: #ffffff;
+                --text: #111827;
+                --muted: #6b7280;
+                --border: #e5e7eb;
+                --border-hover: #c7d2fe;
+                --tag-bg: #eef2ff;
+                --tag-text: #4338ca;
+                --code-bg: #eef2ff;
+                --code-text: #4338ca;
+                --shadow:
+                    0 1px 2px rgba(16, 24, 40, 0.05),
+                    0 2px 6px rgba(16, 24, 40, 0.06);
+                --shadow-lg: 0 10px 24px rgba(16, 24, 40, 0.12);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #0e1016;
+                    --glow: rgba(99, 102, 241, 0.16);
+                    --card: #161923;
+                    --text: #e5e7eb;
+                    --muted: #9ca3af;
+                    --border: #262b38;
+                    --border-hover: #4b5382;
+                    --tag-bg: #242b45;
+                    --tag-text: #a5b4fc;
+                    --code-bg: #242b45;
+                    --code-text: #c7d2fe;
+                    --shadow:
+                        0 1px 2px rgba(0, 0, 0, 0.4),
+                        0 2px 8px rgba(0, 0, 0, 0.3);
+                    --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.5);
+                }
+            }
+
+            *,
+            *::before,
+            *::after {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    "Helvetica Neue",
+                    Arial,
+                    sans-serif;
+                color: var(--text);
+                line-height: 1.55;
+                background: radial-gradient(
+                        900px 480px at 50% -180px,
+                        var(--glow),
+                        transparent
+                    )
+                    var(--bg);
+            }
+
+            .page {
+                max-width: 1080px;
+                margin: 0 auto;
+                padding: 48px 24px 64px;
+            }
+
+            .page-header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 28px;
+            }
+
+            .page-header h1 {
+                margin: 0;
+                font-size: 1.9rem;
+                font-weight: 700;
+                letter-spacing: -0.02em;
+            }
+
+            .count {
+                padding: 3px 10px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                color: var(--muted);
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 999px;
+            }
+
+            .notes {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 16px;
+            }
+
+            .note {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+                padding: 18px;
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                box-shadow: var(--shadow);
+                animation: rise 0.25s ease;
+                transition:
+                    transform 0.16s ease,
+                    box-shadow 0.16s ease,
+                    border-color 0.16s ease;
+            }
+
+            .note:hover {
+                transform: translateY(-3px);
+                border-color: var(--border-hover);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .note-content {
+                flex: 1;
+                margin: 0;
+                font-size: 0.95rem;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+            }
+
+            .note-meta {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .tag {
+                padding: 2px 9px;
+                font-size: 0.72rem;
+                font-weight: 600;
+                color: var(--tag-text);
+                background: var(--tag-bg);
+                border-radius: 999px;
+            }
+
+            .note-date {
+                margin-left: auto;
+                font-size: 0.72rem;
+                color: var(--muted);
+                white-space: nowrap;
+            }
+
+            .empty {
+                grid-column: 1 / -1;
+                padding: 72px 24px;
+                text-align: center;
+                border: 1px dashed var(--border);
+                border-radius: 14px;
+            }
+
+            .empty-title {
+                margin: 0 0 6px;
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+
+            .empty-hint {
+                margin: 0;
+                font-size: 0.9rem;
+                color: var(--muted);
+            }
+
+            code {
+                padding: 2px 6px;
+                font-family:
+                    ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                font-size: 0.85em;
+                color: var(--code-text);
+                background: var(--code-bg);
+                border-radius: 6px;
+            }
+
+            @keyframes rise {
+                from {
+                    opacity: 0;
+                    transform: translateY(6px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .note {
+                    animation: none;
+                    transition: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <header class="page-header">
+                <h1>Notes</h1>
+                <span class="count">{{count}}</span>
+            </header>
+            <main class="notes">{{notes}}</main>
+        </div>
+    </body>
+</html>
