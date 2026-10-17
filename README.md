@@ -10,7 +10,7 @@ Notes are stored locally in a plain JSON file (`db.json`), so there's no databas
 - 🏷️ Tag notes for easy organization
 - 🔍 Search notes by content or tag
 - 🗑️ Remove single notes or wipe everything at once
-- 🌐 Full web UI — add, edit, and delete notes right in your browser
+- 🌐 Full web UI — search, add, edit, and delete notes right in your browser
 - 🎨 Responsive UI with automatic light/dark themes
 
 ## Requirements
@@ -104,6 +104,7 @@ note clean
 `note web` starts a local server and opens an interactive page where you can:
 
 - **Add** notes with the form at the top (separate tags with commas)
+- **Search** notes by content or tag with the search box in the header
 - **Edit** a note with its **Edit** button
 - **Delete** a note with its **Delete** button
 

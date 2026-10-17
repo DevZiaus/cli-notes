@@ -102,6 +102,7 @@ body {
     font-size: 0.8rem;
     font-weight: 500;
     color: var(--muted);
+    white-space: nowrap;
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -109,6 +110,23 @@ body {
 
 .count:empty {
     display: none;
+}
+
+.page-header .search {
+    flex: none;
+    width: 240px;
+    margin-left: auto;
+}
+
+@media (max-width: 560px) {
+    .page-header {
+        flex-wrap: wrap;
+    }
+
+    .page-header .search {
+        width: 100%;
+        margin-left: 0;
+    }
 }
 
 .status {

@@ -2,12 +2,14 @@ const els = {
     count: document.querySelector('#count'),
     status: document.querySelector('#status'),
     form: document.querySelector('#note-form'),
+    search: document.querySelector('#search'),
     notes: document.querySelector('#notes'),
 };
 
 let notes = [];
 let editingId = null;
 let statusTimer = null;
+let query = '';
 
 const request = async (url, options) => {
     const response = await fetch(url, options);
@@ -69,6 +71,19 @@ const splitTags = (value) =>
         .split(',')
         .map((tag) => tag.trim())
         .filter(Boolean);
+
+const matchesQuery = (note) => {
+    if (!query) {
+        return true;
+    }
+
+    const needle = query.toLowerCase();
+
+    return (
+        note.content.toLowerCase().includes(needle) ||
+        note.tags.some((tag) => tag.toLowerCase().includes(needle))
+    );
+};
 
 const showStatus = (message, type = 'error') => {
     els.status.textContent = message;
@@ -187,9 +202,12 @@ const noteCard = (note) => {
 };
 
 const render = () => {
-    els.count.textContent = `${notes.length} ${
-        notes.length === 1 ? 'note' : 'notes'
-    }`;
+    const visible = notes.filter(matchesQuery);
+    const noteWord = notes.length === 1 ? 'note' : 'notes';
+
+    els.count.textContent = query
+        ? `${visible.length} of ${notes.length} ${noteWord}`
+        : `${notes.length} ${noteWord}`;
 
     if (notes.length === 0) {
         const empty = el('div', 'empty');
@@ -201,7 +219,17 @@ const render = () => {
         return;
     }
 
-    els.notes.replaceChildren(...notes.map(noteCard));
+    if (visible.length === 0) {
+        const empty = el('div', 'empty');
+        empty.append(
+            el('p', 'empty-title', `No notes match "${query}"`),
+            el('p', 'empty-hint', 'Try a different search term.'),
+        );
+        els.notes.replaceChildren(empty);
+        return;
+    }
+
+    els.notes.replaceChildren(...visible.map(noteCard));
 };
 
 els.form.addEventListener('submit', async (event) => {
@@ -234,6 +262,19 @@ els.form.addEventListener('submit', async (event) => {
         showStatus(error.message);
     } finally {
         submit.disabled = false;
+    }
+});
+
+els.search.addEventListener('input', () => {
+    query = els.search.value.trim();
+    render();
+});
+
+els.search.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        els.search.value = '';
+        query = '';
+        render();
     }
 });
 
