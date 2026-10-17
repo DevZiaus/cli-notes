@@ -139,7 +139,9 @@ cli-notes/
     ├── db.js           # read/write helpers for db.json
     ├── server.js       # web server with the notes API
     ├── utils.js        # console output formatting
-    └── template.html   # web UI (markup, styles, client-side code)
+    ├── template.html   # web UI markup
+    ├── style.css       # web UI styles
+    └── app.js          # web UI client-side logic
 ```
 
 ## License

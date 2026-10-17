@@ -4,7 +4,20 @@ import open from 'open';
 
 import { getAllNotes, newNote, removeNote, updateNote } from './notes.js';
 
-const HTML_PATH = new URL('./template.html', import.meta.url).pathname;
+const STATIC_ROUTES = {
+    '/': {
+        path: new URL('./template.html', import.meta.url).pathname,
+        contentType: 'text/html; charset=utf-8',
+    },
+    '/style.css': {
+        path: new URL('./style.css', import.meta.url).pathname,
+        contentType: 'text/css; charset=utf-8',
+    },
+    '/app.js': {
+        path: new URL('./app.js', import.meta.url).pathname,
+        contentType: 'text/javascript; charset=utf-8',
+    },
+};
 
 const sendJson = (res, status, data) => {
     res.writeHead(status, { 'Content-Type': 'application/json' });
@@ -132,10 +145,11 @@ const handleRequest = async (req, res) => {
         `http://${req.headers.host ?? 'localhost'}`,
     );
 
-    if (req.method === 'GET' && pathname === '/') {
-        const template = await fs.readFile(HTML_PATH, 'utf-8');
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(template);
+    if (req.method === 'GET' && STATIC_ROUTES[pathname]) {
+        const route = STATIC_ROUTES[pathname];
+        const contents = await fs.readFile(route.path, 'utf-8');
+        res.writeHead(200, { 'Content-Type': route.contentType });
+        res.end(contents);
         return;
     }
 
