@@ -22,7 +22,7 @@ Notes are stored locally in a plain JSON file (`db.json`), so there's no databas
 Clone the repository and install dependencies:
 
 ```bash
-git clone <your-repo-url>
+git clone git@github.com:DevZiaus/cli-notes.git
 cd cli-notes
 npm install
 ```
